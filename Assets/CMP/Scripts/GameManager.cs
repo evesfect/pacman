@@ -21,8 +21,14 @@ namespace CMP.Scripts
         private void Start()
         {
             var gridData = AssetDatabase.Instance.GridData;
-            _pacman = Instantiate(AssetDatabase.Instance.PacmanPrefab);
+
             _inputManager = Instantiate(AssetDatabase.Instance.InputManagerPrefab);
+
+            _pacman = Instantiate(AssetDatabase.Instance.PacmanPrefab);
+            var movementController = _pacman.gameObject.GetComponent<GridMovementController>();
+            if (movementController == null) { movementController = _pacman.gameObject.AddComponent<GridMovementController>(); }
+            _pacman.Initialize(movementController, _inputManager, gridData);
+            
             CreateBackground(gridData);
             AdjustCamera(gridData);
         }
