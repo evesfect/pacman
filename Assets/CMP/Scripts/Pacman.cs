@@ -46,7 +46,7 @@ namespace CMP.Scripts
             // Only make decisions when at the center of the cell
             if (_movementController.IsMoving) return;
 
-            // TRY to move to last buffered direction
+            // Try to move to last buffered direction
             bool movedInNewDirection = _movementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells);
             
             if (movedInNewDirection)
