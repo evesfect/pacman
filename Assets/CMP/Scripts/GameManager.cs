@@ -76,5 +76,145 @@ namespace CMP.Scripts
                 _ghosts.Add(newGhost);
             }
         }
+
+        private void Update()
+        {
+            if (_gameMode == GameMode.GameOver) return;
+
+            Vector2Int pacmanCell = _pacman.GetComponent<GridMovementController>().CurrentCell;
+
+            // 1. Check Game Over (Catch) Condition
+            foreach (var ghost in _ghosts)
+            {
+                float distance = Vector3.Distance(ghost.transform.position, _pacman.transform.position);
+                if (distance <= GameSettings.CatchDistance)
+                {
+                    TriggerGameOver();
+                    return;
+                }
+            }
+
+            // 2. Check Line of Sight (LOS) Condition if we are in Scatter Mode
+            if (_gameMode == GameMode.Scatter)
+            {
+                bool losTriggered = false;
+                
+                foreach (var ghost in _ghosts)
+                {
+                    // Only active, wandering ghosts can trigger the chase
+                    if (ghost.Blackboard.CurrentStateEnum != CMP.Scripts.GhostState.Scatter) continue;
+
+                    // The case study mentions "belli bir mesafeden daha yakınsa". We define 10 cells as this max sight range.
+                    if (CheckLineOfSight(ghost, pacmanCell, 10))
+                    {
+                        losTriggered = true;
+                        break;
+                    }
+                }
+
+                if (losTriggered)
+                {
+                    Debug.Log("Line of Sight triggered! All active ghosts entering Chase Mode!");
+                    _gameMode = GameMode.Chase;
+                    
+                    foreach (var ghost in _ghosts)
+                    {
+                        // Convert all scattering ghosts to chasing ghosts
+                        if (ghost.Blackboard.CurrentStateEnum == CMP.Scripts.GhostState.Scatter)
+                        {
+                            ghost.ChangeState(new ChaseState(ghost.Blackboard), CMP.Scripts.GhostState.Chase);
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool CheckLineOfSight(Ghost ghost, Vector2Int pacmanCell, int maxRange)
+        {
+            Direction facingDir = ghost.Blackboard.CurrentDirection;
+            if (facingDir == Direction.None) return false;
+
+            Vector2Int stepDir = facingDir.ToVector2Int();
+            Vector2Int currentCell = ghost.GetComponent<GridMovementController>().CurrentCell;
+            var gridData = AssetDatabase.Instance.GridData;
+
+            // Cast a "ray" cell by cell in the direction the ghost is facing
+            for (int i = 1; i <= maxRange; i++)
+            {
+                Vector2Int checkCell = currentCell + stepDir * i;
+
+                if (!gridData.GetInBounds(checkCell) || gridData.GetCellAt(checkCell) == CellType.Wall)
+                {
+                    return false; // Vision is blocked by a wall
+                }
+
+                if (checkCell == pacmanCell)
+                {
+                    return true; // We see Pac-Man!
+                }
+            }
+            return false;
+        }
+
+        private void TriggerGameOver()
+        {
+            Debug.Log("Game Over! Pac-Man was caught.");
+            _gameMode = GameMode.GameOver;
+            
+            // Stop movement components so everything freezes
+            _pacman.GetComponent<GridMovementController>().StopMovement();
+            foreach (var ghost in _ghosts)
+            {
+                ghost.GetComponent<GridMovementController>().StopMovement();
+            }
+
+            // Disable brain scripts so their update() stops
+            _pacman.enabled = false;
+            foreach (var ghost in _ghosts)
+            {
+                ghost.enabled = false;
+            }
+
+            _pacman.PlayFailAnimation();
+        }
+        private void OnDrawGizmos()
+        {
+            if (_ghosts == null || AssetDatabase.Instance == null || AssetDatabase.Instance.GridData == null) return;
+
+            var gridData = AssetDatabase.Instance.GridData;
+            int maxRange = 10; // Must match the range used in CheckLineOfSight
+
+            foreach (var ghost in _ghosts)
+            {
+                if (ghost.Blackboard == null) continue;
+                
+                Direction facingDir = ghost.Blackboard.CurrentDirection;
+                if (facingDir == Direction.None) continue;
+
+                Vector2Int stepDir = facingDir.ToVector2Int();
+                Vector2Int currentCell = ghost.GetComponent<GridMovementController>().CurrentCell;
+                
+                // Determine Gizmo color based on state
+                Gizmos.color = ghost.Blackboard.CurrentStateEnum == CMP.Scripts.GhostState.Chase ? Color.red : Color.yellow;
+                
+                Vector3 startPos = ghost.transform.position;
+                Vector3 endPos = startPos;
+
+                // Cast the visual ray exactly how CheckLineOfSight does it
+                for (int i = 1; i <= maxRange; i++)
+                {
+                    Vector2Int checkCell = currentCell + stepDir * i;
+                
+                    if (!gridData.GetInBounds(checkCell) || gridData.GetCellAt(checkCell) == CellType.Wall)
+                    {
+                        // Hit a wall, stop drawing the line here
+                        break;
+                    }
+                    endPos = new Vector3(checkCell.x, checkCell.y, startPos.z);
+                }
+
+                Gizmos.DrawLine(startPos, endPos);
+            }
+        }
     }
 }
