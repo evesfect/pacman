@@ -40,7 +40,7 @@ namespace CMP.Scripts
             
             if (inputDirection != Direction.None)
             {
-                _movementController.TryMoveInDirection(inputDirection, GameSettings.PacmanMovementDuration, _walkableCells);
+                _movementController.TryMoveInDirection(inputDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
             }
         }
     }

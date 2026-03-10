@@ -47,7 +47,7 @@ namespace CMP.Scripts
             if (_movementController.IsMoving) return;
 
             // Try to move to last buffered direction
-            bool movedInNewDirection = _movementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells);
+            bool movedInNewDirection = _movementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
             
             if (movedInNewDirection)
             {
@@ -56,7 +56,7 @@ namespace CMP.Scripts
             else
             {
                 // Hit a wall in the new direction, try to keep going in the current direction
-                _movementController.TryMoveInDirection(_currentDirection, GameSettings.PacmanMovementDuration, _walkableCells);
+                _movementController.TryMoveInDirection(_currentDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
             }
         }
 

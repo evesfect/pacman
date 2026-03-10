@@ -23,7 +23,7 @@ namespace CMP.Scripts
         }
 
         // Attempts to move the object to the adjacent cell in the given direction
-        public bool TryMoveInDirection(Direction direction, float duration, List<CellType> movableCellTypes)
+        public bool TryMoveInDirection(Direction direction, float duration, List<CellType> movableCellTypes, bool faceMovementDirection)
         {
             if (IsMoving || direction == Direction.None)
                 return false;
@@ -34,8 +34,8 @@ namespace CMP.Scripts
             {
                 _movementCoroutine = StartCoroutine(MoveRoutine(nextCell, duration));
                 
-                // Optional: Rotate the transform to face the moving direction
-                transform.rotation = direction.ToQuaternion();
+                if (faceMovementDirection)
+                    transform.rotation = direction.ToQuaternion();
                 return true;
             }
 
