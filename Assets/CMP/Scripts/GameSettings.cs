@@ -11,6 +11,6 @@ namespace CMP.Scripts
             { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
 
         public static float CameraPadding = 1f;
-        public static int MaxLineOfSightRange = 3;
+        public static int MaxLineOfSightRange = 4;
     }
 }
