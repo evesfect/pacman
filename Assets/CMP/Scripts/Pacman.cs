@@ -9,9 +9,8 @@ namespace CMP.Scripts
         public Animator Animator;
         private const string FailAnimationName = "FailAnimation";
 
-        private GridMovementController _movementController;
+        public GridMovementController MovementController { get; private set; }
         private InputManager _inputManager;
-
         private Direction _currentDirection = Direction.None;
         private Direction _nextDirection = Direction.None;
 
@@ -24,19 +23,18 @@ namespace CMP.Scripts
 
         public void Initialize(GridMovementController movementController, InputManager inputManager, GridData gridData)
         {
-            _movementController = movementController;
+            MovementController = movementController;
             _inputManager = inputManager;
 
             // Find starting coordinate from grid
             Vector2Int startCell = gridData.GetCoordsOfCellType(CellType.Pacman)[0];
-            _movementController.Initialize(gridData, startCell);
+            MovementController.Initialize(gridData, startCell);
         }
 
         private void Update()
         {
-            if (_inputManager == null || _movementController == null) return;
+            if (_inputManager == null || MovementController == null) return;
 
-            // Consume the input
             Direction input = _inputManager.ConsumeInput();
             if (input != Direction.None)
             {
@@ -44,10 +42,10 @@ namespace CMP.Scripts
             }
 
             // Only make decisions when at the center of the cell
-            if (_movementController.IsMoving) return;
+            if (MovementController.IsMoving) return;
 
             // Try to move to last buffered direction
-            bool movedInNewDirection = _movementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
+            bool movedInNewDirection = MovementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
             
             if (movedInNewDirection)
             {
@@ -56,7 +54,7 @@ namespace CMP.Scripts
             else
             {
                 // Hit a wall in the new direction, try to keep going in the current direction
-                _movementController.TryMoveInDirection(_currentDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
+                MovementController.TryMoveInDirection(_currentDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
             }
         }
 
