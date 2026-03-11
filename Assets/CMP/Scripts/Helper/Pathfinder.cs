@@ -7,6 +7,7 @@ namespace CMP.Scripts.Helper
     {
         private static readonly Queue<Vector2Int> BfsQueue = new Queue<Vector2Int>();
         private static readonly Dictionary<Vector2Int, Vector2Int> BfsCameFrom = new Dictionary<Vector2Int, Vector2Int>();
+        private static readonly Vector2Int[] NeighborDirections = {Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right};
 
         public static Direction GetShortestPathStep(
             GridData gridData, 
@@ -36,8 +37,10 @@ namespace CMP.Scripts.Helper
                     break;
                 }
 
-                foreach (Vector2Int neighbor in current.GetNeighbours())
+                for (int i = 0; i < NeighborDirections.Length; i++)
                 {
+                    Vector2Int neighbor = current + NeighborDirections[i];
+
                     if (ignoreCell.HasValue && neighbor == ignoreCell.Value) 
                     {
                         continue;

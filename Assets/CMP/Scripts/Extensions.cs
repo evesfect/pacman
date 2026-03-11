@@ -10,7 +10,7 @@ namespace CMP.Scripts
             return cellType is CellType.Pacman or CellType.Empty or CellType.JoinGameCell;
         }
 
-        public static List<Vector2Int> GetNeighbours(this Vector2Int cellCoords)
+        public static List<Vector2Int> GetNeighbours(this Vector2Int cellCoords) // memory leak here....
         {
             return new List<Vector2Int>
             {
