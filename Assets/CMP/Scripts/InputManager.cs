@@ -23,22 +23,15 @@ namespace CMP.Scripts
         
         private void Awake()
         {
-            LeftButton.onClick.AddListener(() =>
-            {
-                _currentDirection = Direction.Left;
-            });
-            RightButton.onClick.AddListener(() =>
-            {
-                _currentDirection = Direction.Right;
-            });
-            UpButton.onClick.AddListener(() =>
-            {
-                _currentDirection = Direction.Up;
-            });
-            DownButton.onClick.AddListener(() =>
-            {
-                _currentDirection = Direction.Down;
-            });
+            if (LeftButton != null) LeftButton.onClick.AddListener(() => _currentDirection = Direction.Left);
+            if (RightButton != null) RightButton.onClick.AddListener(() => _currentDirection = Direction.Right);
+            if (UpButton != null) UpButton.onClick.AddListener(() => _currentDirection = Direction.Up);
+            if (DownButton != null) DownButton.onClick.AddListener(() => _currentDirection = Direction.Down);
+        }
+
+        public void SetInput(Direction dir)
+        {
+            _currentDirection = dir;
         }
 
         public Direction ConsumeInput()

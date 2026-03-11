@@ -9,6 +9,8 @@ namespace CMP.Scripts
     {
         public bool IsMoving { get; private set; }
         public Vector2Int CurrentCell { get; private set; }
+        public Vector2Int TargetCell { get; private set; }
+        private Direction _currentMovementDirection = Direction.None;
         
         private GridData _gridData;
         private Coroutine _movementCoroutine;
@@ -18,6 +20,8 @@ namespace CMP.Scripts
         {
             _gridData = gridData;
             CurrentCell = startCell;
+            TargetCell = startCell;
+            _currentMovementDirection = Direction.None;
             transform.position = new Vector3(startCell.x, startCell.y, transform.position.z);
             IsMoving = false;
         }
@@ -25,13 +29,31 @@ namespace CMP.Scripts
         // Attempts to move the object to the adjacent cell in the given direction
         public bool TryMoveInDirection(Direction direction, float duration, List<CellType> movableCellTypes, bool faceMovementDirection)
         {
-            if (IsMoving || direction == Direction.None)
+            if (direction == Direction.None)
+                return false;
+            
+            bool isReversing = IsMoving && direction == _currentMovementDirection.Reverse();
+
+            if (IsMoving && !isReversing)
                 return false;
 
-            Vector2Int nextCell = CurrentCell + direction.ToVector2Int();
+
+            Vector2Int nextCell;
+            if (isReversing)
+            {
+                nextCell = CurrentCell;
+                CurrentCell = TargetCell;
+                StopMovement();
+            }
+            else
+            {
+                nextCell = CurrentCell + direction.ToVector2Int();
+            }
 
             if (_gridData.IsCellMovable(nextCell, movableCellTypes))
             {
+                TargetCell = nextCell;
+                _currentMovementDirection = direction;
                 _movementCoroutine = StartCoroutine(MoveRoutine(nextCell, duration));
                 
                 if (faceMovementDirection)
@@ -49,16 +71,23 @@ namespace CMP.Scripts
             Vector3 startPosition = transform.position;
             Vector3 targetPosition = new Vector3(targetCell.x, targetCell.y, transform.position.z);
             
-            float elapsedTime = 0f;
+            // calculate duration for mid cell reversals
+            float distance = Vector3.Distance(startPosition, targetPosition);
+            float actualDuration = duration * distance;
 
-            while (elapsedTime < duration)
+            if (actualDuration > 0f)
             {
-                transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
-                elapsedTime += Time.deltaTime;
-                yield return null;
+                float elapsedTime = 0f;
+                while (elapsedTime < actualDuration)
+                {
+                    elapsedTime += Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsedTime / actualDuration);
+                    transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+                    
+                    yield return null;
+                }
             }
 
-            // Snap to the exact final position to prevent floating point inaccuracies
             transform.position = targetPosition;
             CurrentCell = targetCell;
             IsMoving = false;

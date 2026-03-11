@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "CaseStudy-Agave.sln"
+    "dotnet.defaultSolution": "pacman.sln"
 }

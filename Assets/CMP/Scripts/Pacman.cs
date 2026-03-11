@@ -41,8 +41,18 @@ namespace CMP.Scripts
                 _nextDirection = input;
             }
 
-            // Only make decisions when at the center of the cell
-            if (MovementController.IsMoving) return;
+            if (MovementController.IsMoving) 
+            {
+                if (_nextDirection == _currentDirection.Reverse() && _nextDirection != Direction.None)
+                {
+                    bool reversed = MovementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);
+                    if (reversed)
+                    {
+                        _currentDirection = _nextDirection;
+                    }
+                }
+                return;
+            }
 
             // Try to move to last buffered direction
             bool movedInNewDirection = MovementController.TryMoveInDirection(_nextDirection, GameSettings.PacmanMovementDuration, _walkableCells, true);

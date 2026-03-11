@@ -373,6 +373,7 @@ GameObject:
   - component: {fileID: 4818424425195704900}
   - component: {fileID: 8156720937910599909}
   - component: {fileID: 2671651106216665938}
+  - component: {fileID: -8267610984993520513}
   m_Layer: 5
   m_Name: InputManager
   m_TagString: Untagged
@@ -482,6 +483,18 @@ MonoBehaviour:
   RightButton: {fileID: 3854257219073556424}
   UpButton: {fileID: 3617004152487176069}
   DownButton: {fileID: 3991177694315315731}
+--- !u!114 &-8267610984993520513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6311562118668786207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64459c9ee07bbfbcc8fea9c3602d7765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7473704622143706269
 GameObject:
   m_ObjectHideFlags: 0
