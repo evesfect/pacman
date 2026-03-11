@@ -356,6 +356,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32e1e20d475e49bc989380504cb11b81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AssetDatabase: {fileID: 11400000, guid: 7d988b25631636f4fbf1ba0361f1c588, type: 2}
+  GameSettingsData: {fileID: 11400000, guid: e5856ef2cc781a041948082716d342b7, type: 2}
   GameOverPanel: {fileID: 2129142433}
 --- !u!4 &1570789630
 Transform:

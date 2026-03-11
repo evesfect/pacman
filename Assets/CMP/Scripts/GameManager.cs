@@ -15,21 +15,29 @@ namespace CMP.Scripts
 
     public class GameManager : MonoBehaviour
     {
+        public AssetDatabase AssetDatabase;
+        public GameSettingsData GameSettingsData;
+
         public GameObject GameOverPanel;
         private Pacman _pacman;
         private InputManager _inputManager;
         private GameMode _gameMode = GameMode.Scatter;
         private readonly List<Ghost> _ghosts = new();
 
+        private void Awake()
+        {
+            GameSettings.Initialize(GameSettingsData);
+        }
+
         private void Start()
         {
-            var gridData = AssetDatabase.Instance.GridData;
+            var gridData = AssetDatabase.GridData;
             CreateBackground(gridData);
             AdjustCamera(gridData);
 
-            _inputManager = Instantiate(AssetDatabase.Instance.InputManagerPrefab);
+            _inputManager = Instantiate(AssetDatabase.InputManagerPrefab);
 
-            _pacman = Instantiate(AssetDatabase.Instance.PacmanPrefab);
+            _pacman = Instantiate(AssetDatabase.PacmanPrefab);
             var movementController = _pacman.gameObject.GetComponent<GridMovementController>();
             if (movementController == null) { movementController = _pacman.gameObject.AddComponent<GridMovementController>(); }
             _pacman.Initialize(movementController, _inputManager, gridData);
@@ -87,7 +95,7 @@ namespace CMP.Scripts
             
             for (int i = 0; i < GameSettings.AiCharacterCount; i++)
             {
-                Ghost newGhost = Instantiate(AssetDatabase.Instance.Ghost);
+                Ghost newGhost = Instantiate(AssetDatabase.Ghost);
                 
                 Vector2Int startCell = i < spawnCells.Count ? spawnCells[i] : spawnCells[0]; // if there isn't enough spaces default to index 0
 
@@ -99,11 +107,11 @@ namespace CMP.Scripts
 
         private void CreateBackground(GridData gridData)
         {
-            var targetTexture = MapTextureGenerator.Generate(gridData, AssetDatabase.Instance.MapVisualSettings);
+            var targetTexture = MapTextureGenerator.Generate(gridData, AssetDatabase.MapVisualSettings);
             var textureObject = new GameObject("MapTexture");
             textureObject.transform.position = new Vector3(-0.5f, -0.5f, 0f);
             var targetSprite = Sprite.Create(targetTexture, new Rect(0f, 0f, targetTexture.width, targetTexture.height),
-                Vector2.zero,AssetDatabase.Instance.MapVisualSettings.pixelsPerCell);
+                Vector2.zero,AssetDatabase.MapVisualSettings.pixelsPerCell);
             var spriteRenderer = textureObject.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = targetSprite;
             spriteRenderer.sortingOrder = -1;

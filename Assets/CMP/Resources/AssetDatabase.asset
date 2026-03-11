@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ccd2175bf1843ab83a437ee93ead9d7, type: 3}
+  m_Name: AssetDatabase
+  m_EditorClassIdentifier: 
+  PacmanPrefab: {fileID: 3276770451796783426, guid: d225e518bb6d44970ab38d674ee1f051, type: 3}
+  InputManagerPrefab: {fileID: 2671651106216665938, guid: 2dcb648a7bea4419e9781f09b9ef1b1f, type: 3}
+  GridData: {fileID: 11400000, guid: 54774b2e8339a4bebb87909d0f2c5424, type: 2}
+  Ghost: {fileID: 3015146059301652852, guid: fcb7193845967403ca2f8f0e5782ee1e, type: 3}
+  MapVisualSettings: {fileID: 11400000, guid: 0b294d2186df74b8e872924a3adeb492, type: 2}

@@ -2,15 +2,20 @@ namespace CMP.Scripts
 {
     public static class GameSettings
     {
-        public const float AiMovementDuration = 0.25f;
-        public const float PacmanMovementDuration = 0.25f;
-        public const int AiCharacterCount = 3;
-        public static readonly float[] AiJoinDelays = { 1f, 3f, 4f };
-        public static float CatchDistance = .3f;
-        public static readonly Direction[] DirectionsToCheck =
-            { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
+        private static GameSettingsData _data;
 
-        public static float CameraPadding = 1f;
-        public static int MaxLineOfSightRange = 4;
+        public static void Initialize(GameSettingsData data)
+        {
+            _data = data;
+        }
+
+        public static float AiMovementDuration => _data.AiMovementDuration;
+        public static float PacmanMovementDuration => _data.PacmanMovementDuration;
+        public static int AiCharacterCount => _data.AiCharacterCount;
+        public static float[] AiJoinDelays => _data.AiJoinDelays;
+        public static float CatchDistance => _data.CatchDistance;
+        public static Direction[] DirectionsToCheck => _data.DirectionsToCheck;
+        public static float CameraPadding => _data.CameraPadding;
+        public static int MaxLineOfSightRange => _data.MaxLineOfSightRange;
     }
 }

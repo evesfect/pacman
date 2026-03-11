@@ -2,15 +2,23 @@ using UnityEngine;
 
 namespace CMP.Scripts
 {
-    public class AssetDatabase
+    [CreateAssetMenu(fileName = "AssetDatabase", menuName = "PacMan/Asset Database")]
+    public class AssetDatabase : ScriptableObject
     {
-        public static AssetDatabase Instance = new();
+        public Pacman PacmanPrefab;
+        public InputManager InputManagerPrefab;
+        public GridData GridData;
+        public Ghost Ghost;
+        public MapVisualSettings MapVisualSettings;
 
-        public Pacman PacmanPrefab = Resources.Load<Pacman>("Pacman");
-        public InputManager InputManagerPrefab = Resources.Load<InputManager>("InputManager");
-        public GridData GridData = Resources.Load<GridData>("GridData");
-        public Ghost Ghost = Resources.Load<Ghost>("Ghost");
-        public MapVisualSettings MapVisualSettings = Resources.Load<MapVisualSettings>("MapVisualSettings");
+        private void OnEnable()
+        {
+            if (PacmanPrefab == null) PacmanPrefab = Resources.Load<Pacman>("Pacman");
+            if (InputManagerPrefab == null) InputManagerPrefab = Resources.Load<InputManager>("InputManager");
+            if (GridData == null) GridData = Resources.Load<GridData>("GridData");
+            if (Ghost == null) Ghost = Resources.Load<Ghost>("Ghost");
+            if (MapVisualSettings == null) MapVisualSettings = Resources.Load<MapVisualSettings>("MapVisualSettings");
+        }
         
     }
 }
