@@ -88,7 +88,7 @@ namespace CMP.Scripts
                     SetInput(swipeDelta.y > 0 ? Direction.Up : Direction.Down);
                 }
 
-                _startTouchPosition = _currentTouchPosition; // reset so can swipe continuosly
+                _startTouchPosition = _currentTouchPosition; // reset so can swipe continously
             }
         }
     }
