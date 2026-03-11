@@ -31,6 +31,8 @@ namespace CMP.Scripts
 
         private void Start()
         {
+            Application.targetFrameRate = 60;
+
             var gridData = AssetDatabase.GridData;
             CreateBackground(gridData);
             AdjustCamera(gridData);
