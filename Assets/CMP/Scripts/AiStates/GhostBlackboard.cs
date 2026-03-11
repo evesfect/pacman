@@ -6,7 +6,7 @@ namespace CMP.Scripts.AiStates
         public GridMovementController MovementController;
         public GridData GridData;
         public Pacman TargetPacman;
-        public int GhostIndex; // to know which to use from GameSettings.Ai.JoinDelays
+        public int GhostIndex;
         public Direction CurrentDirection = Direction.None;
         public CMP.Scripts.GhostState CurrentStateEnum;
 

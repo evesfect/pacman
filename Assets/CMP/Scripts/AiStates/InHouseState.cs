@@ -8,7 +8,6 @@ namespace CMP.Scripts.AiStates
         private float _timer;
         private readonly float _joinDelay;
         
-        // In the house, ghosts can only walk on the spawn zone
         private readonly List<CellType> _walkableCells = new List<CellType> 
         { 
             CellType.AiSpawnZone 
@@ -16,7 +15,6 @@ namespace CMP.Scripts.AiStates
 
         public InHouseState(GhostBlackboard blackboard) : base(blackboard)
         {
-            // Fetch this specific ghost's delay from the settings
             _joinDelay = GameSettings.AiJoinDelays[blackboard.GhostIndex];
         }
 
@@ -24,7 +22,6 @@ namespace CMP.Scripts.AiStates
         {
             _timer = 0f;
             
-            // Start by trying to move Up or Down
             GhostBlackboard.CurrentDirection = Random.value > 0.5f ? Direction.Up : Direction.Down;
         }
 
@@ -32,7 +29,6 @@ namespace CMP.Scripts.AiStates
         {
             _timer += Time.deltaTime;
 
-            // 1. Check if it's time to join the game
             if (_timer >= _joinDelay)
             {
                 GhostBlackboard.GhostComponent.ChangeState(
@@ -41,7 +37,7 @@ namespace CMP.Scripts.AiStates
                 return;
             }
 
-            // 2. Handle Up/Down bouncing movement
+            // handle idle bouncing
             if (GhostBlackboard.MovementController.IsMoving) return;
 
             bool moved = GhostBlackboard.MovementController.TryMoveInDirection(
@@ -50,8 +46,7 @@ namespace CMP.Scripts.AiStates
                 _walkableCells,
                 false);
 
-            // If we hit the boundary of the spawn zone, reverse direction
-            if (!moved)
+            if (!moved) // if hit boundary reverse dir
             {
                 GhostBlackboard.CurrentDirection = GhostBlackboard.CurrentDirection.Reverse();
                 GhostBlackboard.MovementController.TryMoveInDirection(
