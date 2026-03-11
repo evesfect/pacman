@@ -25,7 +25,8 @@ namespace CMP.Scripts.AiStates
 
             if (IsAtCornerOrIntersection())
             {
-                Vector2Int pacmanCell = GhostBlackboard.TargetPacman.GetComponent<GridMovementController>().TargetCell;
+                var pacmanMovement = GhostBlackboard.TargetPacman.GetComponent<GridMovementController>();
+                Vector2Int pacmanTargetCell = pacmanMovement.TargetCell;
 
                 Direction reverseDir = Direction.None;
                 if (GhostBlackboard.CurrentDirection != Direction.None)
@@ -33,15 +34,36 @@ namespace CMP.Scripts.AiStates
                     reverseDir = GhostBlackboard.CurrentDirection.Reverse();
                 }
 
-                nextStep = Pathfinder.GetShortestPathStep(
+                // pathfind to pacman's target cell
+                Direction pathStep = Pathfinder.GetShortestPathStep(
                     GhostBlackboard.GridData, 
                     GhostBlackboard.MovementController.CurrentCell, 
-                    pacmanCell, 
+                    pacmanTargetCell, 
                     _walkableCells, 
                     reverseDir
                 );
+
+                // if we are on the target cell of pacman, pathfind to pacman's current cell
+                if (pathStep == Direction.None)
+                {
+                    Vector2Int pacmanCurrentCell = pacmanMovement.CurrentCell;
+                    pathStep = Pathfinder.GetShortestPathStep(
+                        GhostBlackboard.GridData, 
+                        GhostBlackboard.MovementController.CurrentCell, 
+                        pacmanCurrentCell, 
+                        _walkableCells, 
+                        reverseDir
+                    );
+                }
+
+                // if pathfinder found a valid toute, overwrite direciton
+                if (pathStep != Direction.None)
+                {
+                    nextStep = pathStep;
+                }
             }
 
+            // execute the move
             if (nextStep != Direction.None)
             {
                 GhostBlackboard.CurrentDirection = nextStep;

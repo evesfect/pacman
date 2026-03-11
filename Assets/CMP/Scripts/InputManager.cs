@@ -2,9 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace CMP.Scripts
-{
-    public enum Direction { None, Left, Right, Up, Down }
-    
+{ 
     public class InputManager : MonoBehaviour
     {
         public Button LeftButton;

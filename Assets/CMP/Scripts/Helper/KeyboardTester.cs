@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CMP.Scripts
+namespace CMP.Scripts.Helper
 {
     [RequireComponent(typeof(InputManager))]
     public class KeyboardDebugTester : MonoBehaviour

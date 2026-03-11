@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pixelsPerCell: 16
   backgroundColor: {r: 0, g: 0, b: 0, a: 1}
-  wallColor: {r: 0.08627452, g: 0.35045293, b: 0.9137255, a: 1}
-  gateColor: {r: 0.6084906, g: 0.80405337, b: 1, a: 1}
+  wallColor: {r: 0.82745105, g: 0, b: 0.89019614, a: 1}
+  gateColor: {r: 0.84461284, g: 1, b: 0.3820755, a: 1}
   wallThickness: 1
   gateThickness: 2
   drawOuterBorder: 1
   outerBorderColor: {r: 0.09019608, g: 0.3529412, b: 0.9137255, a: 1}
-  outerBorderThickness: 1
+  outerBorderThickness: 2

@@ -1,18 +1,12 @@
 using System.Collections.Generic;
 using CMP.Scripts.Helper;
 using CMP.Scripts.AiStates;
+using CMP.Scripts.Shaders;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace CMP.Scripts
 {
-    public enum GameMode
-    {
-        Scatter,
-        Chase,
-        GameOver,
-    }
-
     public class GameManager : MonoBehaviour
     {
         public AssetDatabase AssetDatabase;
@@ -21,17 +15,18 @@ namespace CMP.Scripts
         public GameObject GameOverPanel;
         private Pacman _pacman;
         private InputManager _inputManager;
-        private GameMode _gameMode = GameMode.Scatter;
+        public static GameMode CurrentGameMode { get; private set; } = GameMode.Scatter;
         private readonly List<Ghost> _ghosts = new();
 
         private void Awake()
         {
+            CurrentGameMode = GameMode.Scatter;
             GameSettings.Initialize(GameSettingsData);
         }
 
         private void Start()
         {
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = 90;
 
             var gridData = AssetDatabase.GridData;
             CreateBackground(gridData);
@@ -43,6 +38,9 @@ namespace CMP.Scripts
             var movementController = _pacman.gameObject.GetComponent<GridMovementController>();
             if (movementController == null) { movementController = _pacman.gameObject.AddComponent<GridMovementController>(); }
             _pacman.Initialize(movementController, _inputManager, gridData);
+            
+            var pacmanDissolve = _pacman.GetComponent<DissolveController>();
+            if (pacmanDissolve != null) {pacmanDissolve.Appear();}
 
             SpawnGhosts(gridData);
             Ghost.OnPacmanSpotted += HandlePacmanSpotted;
@@ -57,7 +55,7 @@ namespace CMP.Scripts
 
         private void Update() 
         {
-            if (_gameMode == GameMode.GameOver)
+            if (CurrentGameMode == GameMode.GameOver)
             {
                 return;
             }
@@ -78,9 +76,9 @@ namespace CMP.Scripts
 
         private void HandlePacmanSpotted()
         {
-            if (_gameMode == GameMode.Scatter)
+            if (CurrentGameMode == GameMode.Scatter)
             {
-                _gameMode = GameMode.Chase;
+                CurrentGameMode = GameMode.Chase;
                 foreach (var ghost in _ghosts)
                 {
                     if (ghost.Blackboard.CurrentStateEnum == CMP.Scripts.GhostState.Scatter)
@@ -104,6 +102,9 @@ namespace CMP.Scripts
                 newGhost.Initialize(gridData, _pacman, i, startCell);
                 newGhost.ChangeState(new InHouseState(newGhost.Blackboard), CMP.Scripts.GhostState.InHouse); // force the start state
                 _ghosts.Add(newGhost);
+                
+                var ghostDissolve = newGhost.GetComponent<DissolveController>();
+                if (ghostDissolve != null) { ghostDissolve.Appear(); }
             }
         }
 
@@ -128,10 +129,22 @@ namespace CMP.Scripts
 
         private void TriggerGameOver()
         {
-            _gameMode = GameMode.GameOver;
+            CurrentGameMode = GameMode.GameOver;
             
+            StartCoroutine(GameOverRoutine());
+        }
+
+        public void RestartGame()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        private System.Collections.IEnumerator GameOverRoutine()
+        {
+            // stop movement and input, play pacman fail anim
             _pacman.MovementController.StopMovement();
             _pacman.enabled = false;
+            _pacman.PlayFailAnimation();
 
             foreach (var ghost in _ghosts)
             {
@@ -139,22 +152,37 @@ namespace CMP.Scripts
                 ghost.enabled = false;
             }
 
-            _pacman.PlayFailAnimation();
-
             if (_inputManager != null)
             {
                 _inputManager.gameObject.SetActive(false);
             }
 
+            float waitTime = 1f;
+            yield return new WaitForSeconds(waitTime);
+
+            var pacmanDissolve = _pacman.GetComponent<DissolveController>();
+            if (pacmanDissolve != null)
+            {
+                pacmanDissolve.Dissolve();
+            }
+
+            yield return new WaitForSeconds(waitTime);
+
+            foreach (var ghost in _ghosts)
+            {
+                var ghostDissolve = ghost.GetComponent<DissolveController>();
+                if (ghostDissolve != null)
+                {
+                    ghostDissolve.Dissolve();
+                }
+            }
+
             if (GameOverPanel != null)
             {
                 GameOverPanel.SetActive(true);
+                var gameOverPanelDissolve = GameOverPanel.GetComponent<DissolveController>();
+                if(gameOverPanelDissolve != null) { gameOverPanelDissolve.Appear();}
             }
-        }
-
-        public void RestartGame()
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
 }

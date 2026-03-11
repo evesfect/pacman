@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,12 +8,16 @@ namespace CMP.Scripts
         public bool IsMoving { get; private set; }
         public Vector2Int CurrentCell { get; private set; }
         public Vector2Int TargetCell { get; private set; }
-        private Direction _currentMovementDirection = Direction.None;
         
+        private Direction _currentMovementDirection = Direction.None;
         private GridData _gridData;
-        private Coroutine _movementCoroutine;
 
-        // Initializes the controller and snaps the object to the starting cell
+        // State Machine Variables
+        private Vector3 _startPosition;
+        private Vector3 _targetPosition;
+        private float _elapsedTime;
+        private float _actualDuration;
+
         public void Initialize(GridData gridData, Vector2Int startCell)
         {
             _gridData = gridData;
@@ -24,28 +26,45 @@ namespace CMP.Scripts
             _currentMovementDirection = Direction.None;
             transform.position = new Vector3(startCell.x, startCell.y, transform.position.z);
             IsMoving = false;
+            _elapsedTime = 0f;
         }
 
-        // Attempts to move the object to the adjacent cell in the given direction
+        private void Update()
+        {
+            if (!IsMoving) return;
+
+            _elapsedTime += Time.deltaTime;
+
+            if (_elapsedTime >= _actualDuration)
+            {
+                transform.position = _targetPosition;
+                CurrentCell = TargetCell;
+                IsMoving = false;
+
+                _elapsedTime -= _actualDuration; 
+            }
+            else
+            {
+                float t = _elapsedTime / _actualDuration;
+                transform.position = Vector3.Lerp(_startPosition, _targetPosition, t);
+            }
+        }
+
         public bool TryMoveInDirection(Direction direction, float duration, List<CellType> movableCellTypes, bool faceMovementDirection)
         {
-            if (direction == Direction.None)
-                return false;
+            if (direction == Direction.None) return false;
             
             bool isReversing = IsMoving && direction == _currentMovementDirection.Reverse();
 
-            if (IsMoving && !isReversing)
-                return false;
-
+            if (IsMoving && !isReversing) return false;
 
             Vector2Int nextCell;
-            if (isReversing)
+            if (isReversing) 
             {
                 nextCell = CurrentCell;
                 CurrentCell = TargetCell;
-                StopMovement();
             }
-            else
+            else // at the center of cell
             {
                 nextCell = CurrentCell + direction.ToVector2Int();
             }
@@ -54,52 +73,50 @@ namespace CMP.Scripts
             {
                 TargetCell = nextCell;
                 _currentMovementDirection = direction;
-                _movementCoroutine = StartCoroutine(MoveRoutine(nextCell, duration));
                 
+                _startPosition = transform.position;
+                _targetPosition = new Vector3(nextCell.x, nextCell.y, transform.position.z);
+                
+                float distance = Vector3.Distance(_startPosition, _targetPosition);
+                _actualDuration = duration * distance;
+
+                IsMoving = true;
+
+                // If there is overflow time from previous cell, apply it
+                if (!isReversing && _elapsedTime > 0f)
+                {
+                    // Cap overflow to prevent jumping if framerate drops
+                    _elapsedTime = Mathf.Min(_elapsedTime, _actualDuration * 0.5f);
+                    float t = _elapsedTime / _actualDuration;
+                    transform.position = Vector3.Lerp(_startPosition, _targetPosition, t);
+                }
+                else
+                {
+                    // reversal bleed off timer
+                    _elapsedTime = 0f;
+                }
+
                 if (faceMovementDirection)
+                {
                     transform.rotation = direction.ToQuaternion();
+                }
+
                 return true;
+            }
+
+            // If cannot move, bleed the overflow time
+            if (!IsMoving)
+            {
+                _elapsedTime = 0f;
             }
 
             return false;
         }
 
-        private IEnumerator MoveRoutine(Vector2Int targetCell, float duration)
-        {
-            IsMoving = true;
-            
-            Vector3 startPosition = transform.position;
-            Vector3 targetPosition = new Vector3(targetCell.x, targetCell.y, transform.position.z);
-            
-            // calculate duration for mid cell reversals
-            float distance = Vector3.Distance(startPosition, targetPosition);
-            float actualDuration = duration * distance;
-
-            if (actualDuration > 0f)
-            {
-                float elapsedTime = 0f;
-                while (elapsedTime < actualDuration)
-                {
-                    elapsedTime += Time.deltaTime;
-                    float t = Mathf.Clamp01(elapsedTime / actualDuration);
-                    transform.position = Vector3.Lerp(startPosition, targetPosition, t);
-                    
-                    yield return null;
-                }
-            }
-
-            transform.position = targetPosition;
-            CurrentCell = targetCell;
-            IsMoving = false;
-        }
-
         public void StopMovement()
         {
-            if (_movementCoroutine != null)
-            {
-                StopCoroutine(_movementCoroutine);
-                IsMoving = false;
-            }
+            IsMoving = false;
+            _elapsedTime = 0f;
         }
     }
 }

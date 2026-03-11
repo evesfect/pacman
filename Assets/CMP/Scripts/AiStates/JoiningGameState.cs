@@ -32,11 +32,22 @@ namespace CMP.Scripts.AiStates
 
             if (GhostBlackboard.MovementController.CurrentCell == _targetCell) // check if arrived at join cell
             {
-                GhostBlackboard.GhostComponent.ChangeState(
-                    new ScatterState(GhostBlackboard),
-                    CMP.Scripts.GhostState.Scatter
-                );
-                return; 
+                if (GameManager.CurrentGameMode == GameMode.Chase)
+                {
+                    GhostBlackboard.GhostComponent.ChangeState(
+                        new ChaseState(GhostBlackboard),
+                        CMP.Scripts.GhostState.Chase
+                    );
+                }
+                else
+                {
+                    GhostBlackboard.GhostComponent.ChangeState(
+                        new ScatterState(GhostBlackboard),
+                        CMP.Scripts.GhostState.Scatter
+                    );
+                    return; 
+                }
+                
             }
 
             Direction nextStep = Pathfinder.GetShortestPathStep(

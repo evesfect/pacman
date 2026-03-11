@@ -53,7 +53,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 0249d15eb2c9b2343a44c28f74431a2d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 738aa4305c363456aa1a723c62dded97, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 4400281737324402527}
   - component: {fileID: 3276770451796783426}
   - component: {fileID: -6389002719617634329}
+  - component: {fileID: 8985244670810800239}
   m_Layer: 0
   m_Name: Pacman
   m_TagString: Untagged
@@ -165,3 +166,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b363b10e74b265458e44c29b7de70fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8985244670810800239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8612209853364153633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a84606d124a36242a484635467a05a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startDissolved: 1
+  appearDuration: 0.3
+  dissolveDuration: 1
+  transitionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  dissolveProperty: _Dissolve
+  visibleValue: 0
+  dissolvedValue: 1

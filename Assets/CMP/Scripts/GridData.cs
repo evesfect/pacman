@@ -3,17 +3,6 @@ using UnityEngine;
 
 namespace CMP.Scripts
 {
-    public enum CellType
-    {
-        Empty,
-        Wall,
-        AiSpawnZone,
-        AiGate,
-        Pacman,
-        JoinGameCell,
-        Invalid,
-    }
-
     [CreateAssetMenu(fileName = "NewGridData", menuName = "PacMan/Grid Data")]
     public class GridData : ScriptableObject
     {

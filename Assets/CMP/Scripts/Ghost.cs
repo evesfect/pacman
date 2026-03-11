@@ -4,14 +4,6 @@ using System;
 
 namespace CMP.Scripts
 {
-    public enum GhostState
-    {
-        InHouse,
-        JoiningGame,
-        Scatter,
-        Chase,
-    }
-
     [Serializable]
     public class EyePupils
     {
@@ -39,6 +31,11 @@ namespace CMP.Scripts
         public EyePupils LeftPupils;
         public EyePupils RightPupils;
 
+        public SpriteRenderer BodyRenderer;
+        public bool RandomColor = true;
+        public Color ChaseColor = Color.red;
+        private Color _originalColor;
+
         public GhostBlackboard Blackboard {get; private set;}
 
         private CMP.Scripts.AiStates.GhostState _currentAiState;
@@ -49,12 +46,24 @@ namespace CMP.Scripts
             var movementController = GetComponent<GridMovementController>();
             movementController.Initialize(gridData, startCell);
             Blackboard = new GhostBlackboard(this, movementController, gridData, pacman, ghostIndex);
+
+            if (BodyRenderer != null)
+            {
+                _originalColor = RandomColor? UnityEngine.Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.8f, 1f): BodyRenderer.color;
+                BodyRenderer.color = _originalColor;
+            }
         }
 
         public void ChangeState(CMP.Scripts.AiStates.GhostState newState, CMP.Scripts.GhostState enumState)
         {
             _currentAiState = newState;
             Blackboard.CurrentStateEnum = enumState;
+
+            if (BodyRenderer != null)
+            {
+                BodyRenderer.color = enumState == CMP.Scripts.GhostState.Chase ? ChaseColor : _originalColor;
+            }
+
             _currentAiState?.OnEnter();
         }
 
