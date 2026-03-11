@@ -25,7 +25,7 @@ namespace CMP.Scripts.AiStates
 
             if (IsAtCornerOrIntersection())
             {
-                Vector2Int pacmanCell = GhostBlackboard.TargetPacman.GetComponent<GridMovementController>().CurrentCell;
+                Vector2Int pacmanCell = GhostBlackboard.TargetPacman.GetComponent<GridMovementController>().TargetCell;
 
                 Direction reverseDir = Direction.None;
                 if (GhostBlackboard.CurrentDirection != Direction.None)
