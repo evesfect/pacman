@@ -1,9 +1,9 @@
-One-sided Pacman clone, where you run away from the ghosts.
+# One-sided Pacman clone, where you only run away from the ghosts.
 
-Implemented:
-  Ghost state machines
-  Smooth movement on the grid
-  UI Button, Swipe, Keyboard inputs
-  Retro dither dissolve shader
+Implemented: <br>
+    - Ghost state machines, <br>
+    - Smooth movement on the grid, <br>
+    - UI Button, Swipe, Keyboard inputs, <br>
+    - Retro dither dissolve shader <br>
 
-Functionality to eat the ghosts is not implemented as it was not in the case study document.
+Functionality to eat the ghosts, nor the timeout for ghost chasing is not implemented as it was not in the case study document.
